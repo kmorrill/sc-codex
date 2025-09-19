@@ -17,11 +17,24 @@ Makefile        # automation entry points (audition, boot, watch)
 
 ### Usage
 
-- `make audition` boots `sclang`, compiles everything under `synths/`, and plays a 4-note demo for any new SynthDef it finds.
+- `make audition` boots `sclang` **in daemon mode** (`-D`), compiles everything under `synths/`, and auditions only one SynthDef by default. The wrapper picks the most recently modified `synths/*.scd` file (usually the patch you are working on) and plays a short reference phrase for that definition.
+- `make audition-debug` runs the same session through the timeout harness but leaves stdout/stderr unfiltered so you can inspect any SuperCollider errors directly.
 - `make watch` (requires `entr`) re-runs the audition whenever synth files change.
 - `make boot` launches `scsynth` manually on the default port in case you want to drive it from an editor.
+
+Set `AUDITION_ONLY` to override the default target. Examples:
+
+```bash
+# audition a specific synth
+AUDITION_ONLY=bass_simple make audition
+
+# audition multiple synths in sequence
+AUDITION_ONLY="bass_simple,soft_pad" make audition
+
+# fall back to auditioning every SynthDef
+AUDITION_ONLY=all make audition
+```
 
 ### Current state
 
 `runner/audition.scd` forces a 48 kHz session on the MacBook Pro speaker/mic pair, disables input buses for stability, and logs which SynthDefs were discovered. Build scripts still prioritize stock UGens; plugin-dependent definitions should provide fallbacks.
-

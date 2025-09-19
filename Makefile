@@ -4,11 +4,18 @@ SCSYNTH := /Applications/SuperCollider.app/Contents/Resources/scsynth
 AUDITION_SCRIPT := $(abspath runner/audition.scd)
 AUDIO_CONF := $(abspath runner/sclang_conf.yaml)
 AUDIO_RUNTIME := $(abspath runner/runtime)
+AUDITION_WRAPPER := $(abspath runner/run_audition.py)
+PYTHON ?= python3
 
 .PHONY: audition boot watch
 
 audition:
-	SC_AUDITION=1 $(SCLANG) -d $(AUDIO_RUNTIME) -l $(AUDIO_CONF) $(AUDITION_SCRIPT)
+	$(PYTHON) $(AUDITION_WRAPPER)
+
+.PHONY: audition-debug
+
+audition-debug:
+	AUDITION_DEBUG=1 $(PYTHON) $(AUDITION_WRAPPER)
 
 boot:
 	$(SCSYNTH) -u 57110
