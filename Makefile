@@ -8,7 +8,7 @@ AUDIO_RUNTIME := $(abspath runner/runtime)
 .PHONY: audition boot watch
 
 audition:
-	$(SCLANG) -d $(AUDIO_RUNTIME) -l $(AUDIO_CONF) $(AUDITION_SCRIPT)
+	SC_AUDITION=1 $(SCLANG) -d $(AUDIO_RUNTIME) -l $(AUDIO_CONF) $(AUDITION_SCRIPT)
 
 boot:
 	$(SCSYNTH) -u 57110

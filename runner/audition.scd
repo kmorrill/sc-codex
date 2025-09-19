@@ -1,5 +1,14 @@
 (
 var s = Server.default;
+s.options.device = nil;
+s.options.sampleRate = 48000;
+s.options.numInputBusChannels = 0;
+s.options.numOutputBusChannels = 2;
+s.options.inDevice = "MacBook Pro Microphone";
+s.options.outDevice = "MacBook Pro Speakers";
+
+"[audition] script starting".postln;
+
 s.waitForBoot({
     var synthDir, synthFiles, descLib, before, newDefs;
 
@@ -7,7 +16,8 @@ s.waitForBoot({
     ("Loading synths from: " ++ synthDir).postln;
 
     descLib = SynthDescLib.global;
-    before = descLib.synthDescs.copy;
+    before = descLib.synthDescs.keys;
+    ("SynthDefs before audition: " ++ before.size).postln;
 
     synthFiles = PathName(synthDir).entries.select({ |p|
         p.isFile and: { p.extension == "scd" }
@@ -26,8 +36,11 @@ s.waitForBoot({
     s.sync;
 
     newDefs = List.new;
-    descLib.synthDescs.keysDo({ |key|
-        if(before.includesKey(key).not) {
+    var after = descLib.synthDescs.keys;
+    ("SynthDefs after audition load: " ++ after.size).postln;
+
+    after.do({ |key|
+        if(before.includes(key).not) {
             newDefs.add(key);
         };
     });
@@ -103,4 +116,4 @@ s.waitForBoot({
         }).play(clock);
     }.value;
 });
-)
+).value;
