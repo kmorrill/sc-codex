@@ -10,3 +10,4 @@ SynthDef(\bleep, {
     sig = sig * env * amp;
     Out.ar(\out.kr(0), sig ! 2);
 }).add;
+"[bleep loaded]".postln;

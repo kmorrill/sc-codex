@@ -10,23 +10,19 @@ s.options.outDevice = "MacBook Pro Speakers";
 "[audition] script starting".postln;
 
 s.waitForBoot({
-    var synthDir, synthFiles, descLib, before, newDefs;
+    var synthDir, synthFiles, newDefs;
 
     synthDir = (thisProcess.nowExecutingPath.dirname +/+ "../synths").standardizePath;
     ("Loading synths from: " ++ synthDir).postln;
 
-    descLib = SynthDescLib.global;
-    before = descLib.synthDescs.keys;
-    ("SynthDefs before audition: " ++ before.size).postln;
-
     synthFiles = PathName(synthDir).entries.select({ |p|
         p.isFile and: { p.extension == "scd" }
-    });
+    }).sort({ |a, b| a.fileName < b.fileName });
 
-    synthFiles.sortBy(_.fileName).do({ |entry|
+    synthFiles.do({ |entry|
         ("Compiling " ++ entry.fileName).postln;
         try {
-            this.compileFile(entry.fullPath);
+            thisProcess.interpreter.executeFile(entry.fullPath);
         } {
             |err|
             ("   ⚠️ Compile failed for " ++ entry.fileName ++ ": " ++ err).postln;
@@ -35,16 +31,8 @@ s.waitForBoot({
 
     s.sync;
 
-    newDefs = List.new;
-    var after = descLib.synthDescs.keys;
-    ("SynthDefs after audition load: " ++ after.size).postln;
-
-    after.do({ |key|
-        if(before.includes(key).not) {
-            newDefs.add(key);
-        };
-    });
-    newDefs = newDefs.asArray.sort;
+    newDefs = synthFiles.collect({ |entry| entry.fileNameWithoutExtension.asSymbol }).as(Set).asArray.sort;
+    ("SynthDefs registered: " ++ newDefs.collect(_.asString).join(", ")).postln;
 
     if(newDefs.isEmpty) {
         ("No SynthDefs loaded; installing fallback " ++ \bleep_demo.asString).postln;
@@ -116,4 +104,4 @@ s.waitForBoot({
         }).play(clock);
     }.value;
 });
-).value;
+)
