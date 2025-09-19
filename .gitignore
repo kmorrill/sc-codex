@@ -1,0 +1,14 @@
+# macOS noise
+.DS_Store
+
+# build artifacts
+/build/
+/vendor/mi-ugens/build/
+/vendor/sc3-plugins/build/
+
+# SuperCollider runtime
+runner/runtime/
+runner/sclang_conf.yaml
+
+# Logs
+*.log
