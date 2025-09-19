@@ -35,6 +35,13 @@ AUDITION_ONLY="bass_simple,soft_pad" make audition
 AUDITION_ONLY=all make audition
 ```
 
+### Audio capture
+
+- On macOS, each audition run now records the system output to a WAV file using `ffmpeg`.
+- The runner targets the `MacBook Pro Speakers` device (matching the SuperCollider session defaults) and writes recordings under `runner/runtime/recordings/`.
+- Set `AUDITION_CAPTURE_DEVICE` to override the output device name when a different aggregate/output is required. Leave the variable unset (or ensure it expands to an empty string) to disable capture.
+- If `ffmpeg` is not installed or the platform is not macOS, the runner automatically skips audio capture.
+
 ### Current state
 
 `runner/audition.scd` forces a 48 kHz session on the MacBook Pro speaker/mic pair, disables input buses for stability, and logs which SynthDefs were discovered. Build scripts still prioritize stock UGens; plugin-dependent definitions should provide fallbacks.
