@@ -5,6 +5,8 @@ SynthDef(\bass_simple, {
     var rel = \rel.kr(0.25).clip(0.01, 2.0);
     var glide = \glide.kr(0.02).clip(0.0, 1.0);
     var cutoff = \cutoff.kr(800).clip(40, 4000);
+    var filtEnvDepth = \filt_env_depth.kr(0.25).clip(0, 1.5);
+    var filtEnvDecay = \filt_env_decay.kr(0.35).clip(0.05, 3.0);
     var wobbleRate = \wobble_rate.kr(3).clip(0.1, 12);
     var wobbleDepth = \wobble_depth.kr(0.35).clip(0, 1);
     var grit = \grit.kr(0.7).clip(0, 2);
@@ -12,7 +14,9 @@ SynthDef(\bass_simple, {
     var env = Env.adsr(atk, 0.08, 0.5, rel, curve: -6).ar(gate: gate, doneAction: 2);
     var pitch = Lag.kr(freq, glide);
     var wobble = SinOsc.kr(wobbleRate, 0).linlin(-1, 1, 0.3.neg, 0.3) + LFNoise1.kr(wobbleRate * 1.7, 0.2);
-    var cutoffMod = (cutoff * (1 + wobbleDepth * wobble)).clip(80, 5000);
+    var cutoffBase = (cutoff * (1 + wobbleDepth * wobble)).clip(80, 5000);
+    var filterEnv = EnvGen.kr(Env.perc(0.001, filtEnvDecay, curve: -4), gate, doneAction: 0);
+    var cutoffMod = (cutoffBase * (1 + (filterEnv * filtEnvDepth))).clip(80, 6000);
     var main = Mix([
         VarSaw.ar(pitch, 0, 0.3),
         Pulse.ar(pitch, 0.4)
